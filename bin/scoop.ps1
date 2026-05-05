@@ -20,7 +20,7 @@ switch ($subCommand) {
     }
     ({ $subCommand -in @('-v', '--version') }) {
         Write-Host 'Current Scoop version:'
-        if ((Test-GitAvailable) -and (Test-Path "$PSScriptRoot\..\.git") -and ((get_config SCOOP_BRANCH 'master') -ne 'master')) {
+        if ((Test-GitAvailable) -and (Test-Path "$PSScriptRoot\..\.git") -and ((get_config SCOOP_BRANCH 'main') -ne 'main')) {
             Invoke-Git -Path "$PSScriptRoot\.." -ArgumentList @('--no-pager', 'log', 'HEAD', '-1', '--oneline')
         } else {
             $version = Select-String -Pattern '^## \[(v[\d.]+)\].*?([\d-]+)$' -Path "$PSScriptRoot\..\CHANGELOG.md"

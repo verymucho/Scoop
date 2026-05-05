@@ -1,3 +1,5 @@
+. "$PSScriptRoot\mirror.ps1"
+
 $bucketsdir = "$scoopdir\buckets"
 
 function Find-BucketDirectory {
@@ -131,7 +133,7 @@ function add_bucket($name, $repo) {
         warn "The '$name' bucket already exists. To add this bucket again, first remove it by running 'scoop bucket rm $name'."
         return 2
     }
-
+    $repo = url_replace $repo
     $uni_repo = Convert-RepositoryUri -Uri $repo
     if ($null -eq $uni_repo) {
         return 1

@@ -2,6 +2,8 @@
 
 ## Meta downloader
 
+. "$PSScriptRoot\mirror.ps1"
+
 function Invoke-ScoopDownload ($app, $version, $manifest, $bucket, $architecture, $dir, $use_cache = $true, $check_hash = $true) {
     # we only want to show this warning once
     if (!$use_cache) { warn 'Cache is being ignored.' }
@@ -88,7 +90,7 @@ function Start-Download ($url, $to, $cookies) {
 
 function Invoke-Download ($url, $to, $cookies, $progress) {
     # download with filesize and progress indicator
-    $reqUrl = ($url -split '#')[0]
+    $reqUrl = url_replace(($url -split '#')[0])
     $wreq = [Net.WebRequest]::Create($reqUrl)
     if ($wreq -is [Net.HttpWebRequest]) {
         $wreq.UserAgent = Get-UserAgent
@@ -402,7 +404,7 @@ function Invoke-CachedAria2Download ($app, $version, $manifest, $architecture, $
                     warn 'Token might be misconfigured.'
                 }
             }
-            $urlstxt_content += "$try_url`n"
+            $urlstxt_content += "$(url_replace $try_url)`n"
             if (!$url.Contains('sourceforge.net')) {
                 $urlstxt_content += "    referer=$(strip_filename $url)`n"
             }
@@ -508,6 +510,9 @@ function Invoke-CachedAria2Download ($app, $version, $manifest, $architecture, $
                 }
                 if ($url.Contains('sourceforge.net')) {
                     Write-Host -f yellow 'SourceForge.net is known for causing hash validation fails. Please try again before opening a ticket.'
+                }
+                if (get_config URL_REPLACE -ne $False) {
+                    Write-Host -f yellow '[UrlReplace] is known for causing hash validation fails. Please try again before opening a ticket. You can disable this module by "scoop config url_replace false".'
                 }
                 abort $(new_issue_msg $app $bucket 'hash check failed')
             }
